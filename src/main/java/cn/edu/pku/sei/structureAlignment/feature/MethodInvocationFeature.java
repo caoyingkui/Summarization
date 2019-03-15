@@ -1,13 +1,11 @@
 package cn.edu.pku.sei.structureAlignment.feature;
 
-import cn.edu.pku.sei.structureAlignment.CodeLineRelation.CodeLineRelationGraph;
 import cn.edu.pku.sei.structureAlignment.alignment.NodeComparator;
 import cn.edu.pku.sei.structureAlignment.parser.code.ClassJavadoc;
 import cn.edu.pku.sei.structureAlignment.parser.nlp.Dependency;
-import cn.edu.pku.sei.structureAlignment.parser.nlp.NLParser;
 import cn.edu.pku.sei.structureAlignment.tree.CodeStructureTree;
-import cn.edu.pku.sei.structureAlignment.tree.Node;
-import cn.edu.pku.sei.structureAlignment.tree.NodeType;
+import cn.edu.pku.sei.structureAlignment.tree.node.Node;
+import cn.edu.pku.sei.structureAlignment.tree.node.NodeType;
 import cn.edu.pku.sei.structureAlignment.tree.TextStructureTree;
 import cn.edu.pku.sei.structureAlignment.util.Stemmer;
 

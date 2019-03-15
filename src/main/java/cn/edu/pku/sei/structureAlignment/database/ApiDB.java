@@ -14,9 +14,9 @@ public class ApiDB {
     static{
         ResourceBundle bundle = ResourceBundle.getBundle("database");
         String url = bundle.getString("luceneAPI_url");
-        String user = bundle.getString("luceneAPI_user");
-        String pwd = bundle.getString("luceneAPI_pwd");
-        String driver = bundle.getString("luceneAPI_driver");
+        String user = bundle.getString("db_user");
+        String pwd = bundle.getString("db_pwd");
+        String driver = bundle.getString("db_driver");
         tableName = bundle.getString("luceneAPI_table");
         conn = new SqlConnector(url , user , pwd , driver);
         conn.start();

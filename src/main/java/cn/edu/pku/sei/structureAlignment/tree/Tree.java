@@ -2,7 +2,7 @@ package cn.edu.pku.sei.structureAlignment.tree;
 
 import cn.edu.pku.sei.structureAlignment.Printer;
 import cn.edu.pku.sei.structureAlignment.parser.nlp.Dependency;
-import com.google.protobuf.MapEntry;
+import cn.edu.pku.sei.structureAlignment.tree.node.Node;
 import javafx.util.Pair;
 
 import javax.swing.*;
@@ -584,5 +584,9 @@ public abstract class Tree<T extends Tree<T>>{
         }
 
         return result;
+    }
+
+    public void clean() {
+        this.getAllLeafNodes().stream().forEach(node -> node.matchedCodeNodeList = new ArrayList<>());
     }
 }

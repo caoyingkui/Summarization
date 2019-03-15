@@ -2,17 +2,15 @@ package cn.edu.pku.sei.structureAlignment.feature;
 
 import cn.edu.pku.sei.structureAlignment.database.ApiDB;
 import cn.edu.pku.sei.structureAlignment.parser.nlp.Dependency;
-import cn.edu.pku.sei.structureAlignment.parser.nlp.NLParser;
 import cn.edu.pku.sei.structureAlignment.tree.CodeStructureTree;
-import cn.edu.pku.sei.structureAlignment.tree.NodeType;
+import cn.edu.pku.sei.structureAlignment.tree.node.NodeType;
 import cn.edu.pku.sei.structureAlignment.tree.TextStructureTree;
 import cn.edu.pku.sei.structureAlignment.tree.Tree;
-import cn.edu.pku.sei.structureAlignment.util.ClassNameList;
 import cn.edu.pku.sei.structureAlignment.util.Stemmer;
 
 import java.util.*;
 
-import static cn.edu.pku.sei.structureAlignment.tree.NodeType.CODE_VariableDeclarationStatement;
+import static cn.edu.pku.sei.structureAlignment.tree.node.NodeType.CODE_VariableDeclarationStatement;
 
 /**
  * Created by oliver on 2018/3/10.

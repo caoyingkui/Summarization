@@ -1,10 +1,10 @@
 package cn.edu.pku.sei.structureAlignment.CodeLineRelation;
 
-import cn.edu.pku.sei.structureAlignment.feature.Feature;
 import cn.edu.pku.sei.structureAlignment.parser.code.CodeVisitor;
 import cn.edu.pku.sei.structureAlignment.parser.code.StatementVisitor;
 import cn.edu.pku.sei.structureAlignment.parser.nlp.NLParser;
 import cn.edu.pku.sei.structureAlignment.tree.*;
+import cn.edu.pku.sei.structureAlignment.tree.node.Node;
 import cn.edu.pku.sei.structureAlignment.util.DoubleValue;
 import cn.edu.pku.sei.structureAlignment.util.Matrix;
 import cn.edu.pku.sei.structureAlignment.util.Stemmer;
@@ -13,10 +13,6 @@ import org.eclipse.jdt.core.dom.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -124,10 +120,11 @@ public class CodeLineRelationGraph extends JPanel{
      * if  code line A uses some variable which are declared in code line B, then the node A will be the node B's child, and B will be the parent of A.
      * @param code
      */
-    public void build(String code){
+    public CodeLineRelationGraph build(String code){
         this.code = code;
         build(getStatements(code));
         calculateTokenOccurFrequency();
+        return this;
     }
 
     public void build(Block block){
@@ -195,6 +192,7 @@ public class CodeLineRelationGraph extends JPanel{
                 }
 
                 CodeStructureTree codeTree = codeVisitor.getTree();
+                codeTree.startPosition = statement.getStartPosition();
                 //codeTree.updateJavadocInfo(); // add javadoc info
                 CodeLineNode node = new CodeLineNode();
 

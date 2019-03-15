@@ -1,14 +1,12 @@
 package cn.edu.pku.sei.structureAlignment.alignment;
 
-import cn.edu.pku.sei.structureAlignment.tree.Node;
-import cn.edu.pku.sei.structureAlignment.tree.NodeType;
+import cn.edu.pku.sei.structureAlignment.tree.node.Node;
+import cn.edu.pku.sei.structureAlignment.tree.node.NodeType;
 import cn.edu.pku.sei.structureAlignment.util.Stemmer;
 import cn.edu.pku.sei.structureAlignment.util.StopWordList;
 import cn.edu.pku.sei.structureAlignment.util.WN;
-import com.google.common.base.Stopwatch;
 
 import java.util.*;
-import java.util.regex.*;
 
 /**
  * Created by oliver on 2018/7/1.

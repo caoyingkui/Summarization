@@ -1,7 +1,8 @@
-package cn.edu.pku.sei.structureAlignment.tree;
+package cn.edu.pku.sei.structureAlignment.tree.node;
 
 import cn.edu.pku.sei.structureAlignment.parser.code.CodeVisitor;
-import cn.edu.pku.sei.structureAlignment.util.ClassNameList;
+import cn.edu.pku.sei.structureAlignment.tree.MatchedNode;
+import cn.edu.pku.sei.structureAlignment.tree.Tree;
 import cn.edu.pku.sei.structureAlignment.util.Stemmer;
 import cn.edu.pku.sei.structureAlignment.util.StopWordList;
 import cn.edu.pku.sei.structureAlignment.util.WN;
@@ -9,31 +10,24 @@ import edu.cmu.lti.lexical_db.ILexicalDatabase;
 import edu.cmu.lti.lexical_db.NictWordNet;
 import edu.cmu.lti.ws4j.impl.WuPalmer;
 import javafx.util.Pair;
-import net.didion.jwnl.JWNL;
-import net.didion.jwnl.data.IndexWord;
-import net.didion.jwnl.data.IndexWordSet;
-import net.didion.jwnl.data.POS;
-import net.didion.jwnl.dictionary.Dictionary;
 
-import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/*
 import edu.cmu.lti.ws4j.util.*;
 import org.python.core.PyFunction;
 import org.python.core.PyObject;
 import org.python.core.PyString;
 import org.python.util.PythonInterpreter;
-
+*/
 /**
  * Created by oliver on 2017/12/23.
  */
 public class Node {
-
-
-    protected int id;
-    protected NodeType type;
+    public int id;
+    public NodeType type;
     protected String content;  // the original text of a node
     public List<String> alternatives;
     protected String displayContent; //
@@ -123,6 +117,9 @@ public class Node {
      *          0: if two nodes' are completely different
      */
     public static double compare(Node codeNode, Node textNode, Map<String , Integer> codeTokenOccurFrequency, Map<String , Integer> textTokenOccurFrequency){
+
+        if (codeNode.type == NodeType.ADDED_KEYWORD)
+            return 0;
 
         // 默认this指向的是一个code节点
         String content = codeNode.getContent();
@@ -440,6 +437,7 @@ public class Node {
     }
 
     public static void main(String[] args){
+        /*
         Properties props = new Properties();
         props.put("python.home", "path to the Lib folder");
         //props.put("python.console.encoding", "UTF-8");
@@ -456,7 +454,7 @@ public class Node {
         interpreter.execfile("C:\\Users\\oliver\\PycharmProjects\\wordSimilarityTest\\test.py");
         PyFunction func = (PyFunction) interpreter.get("similarity_base_on_wordNet" , PyFunction.class);
         PyObject obj = func.__call__(new PyString("one") , new PyString("two"));
-        System.out.println(obj.toString());
+        System.out.println(obj.toString());*/
 
 
         /*ILexicalDatabase db = new NictWordNet();

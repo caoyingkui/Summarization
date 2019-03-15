@@ -1,5 +1,7 @@
 package cn.edu.pku.sei.structureAlignment.tree;
 
+import cn.edu.pku.sei.structureAlignment.tree.node.Node;
+
 /**
  * Created by oliver on 2018/3/22.
  * MatchedNode is used to recode the matched node with the similarity

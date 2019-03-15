@@ -3,6 +3,8 @@ package cn.edu.pku.sei.structureAlignment.tree;
 
 import cn.edu.pku.sei.structureAlignment.parser.code.ClassJavadoc;
 import cn.edu.pku.sei.structureAlignment.parser.code.CodeVisitor;
+import cn.edu.pku.sei.structureAlignment.tree.node.Node;
+import cn.edu.pku.sei.structureAlignment.tree.node.NodeType;
 import cn.edu.pku.sei.structureAlignment.util.Stemmer;
 import org.eclipse.jdt.core.dom.*;
 
@@ -15,6 +17,7 @@ public class CodeStructureTree extends Tree<CodeStructureTree>{
 
     protected String code;
     private Map<String , Object> properties;
+    public int startPosition = 0;
 
     public void setProperty(String propertyName , Object data){
         if(properties == null)
@@ -35,7 +38,6 @@ public class CodeStructureTree extends Tree<CodeStructureTree>{
         parser.setEnvironment(new String[]{""}, new String[]{""}, new String[] { "UTF-8" }, true);
         parser.setSource((
                 "indexWriter.AddDocument(document);"
-
                 ).toCharArray());
         //parser.setSource("d = null;".toCharArray());
 
@@ -51,15 +53,6 @@ public class CodeStructureTree extends Tree<CodeStructureTree>{
 
         CodeStructureTree tree = visitor.getTree();
         tree.print();
-        //tree.findCommonParents(16 , 19 , 4);
-
-        /*JFrame frame = new JFrame();
-        Printer printer = new Printer(tree.getTree(2));
-        printer.setBackground(Color.white);
-        frame.add(printer);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1200, 1200);
-        frame.setVisible(true);*/
 
     }
 

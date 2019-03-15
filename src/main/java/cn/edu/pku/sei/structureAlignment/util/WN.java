@@ -1,10 +1,7 @@
 package cn.edu.pku.sei.structureAlignment.util;
 
-import cn.edu.pku.sei.structureAlignment.date.*;
-import cn.edu.pku.sei.structureAlignment.date.Date;
 import cn.edu.pku.sei.structureAlignment.tree.CodeStructureTree;
-import cn.edu.pku.sei.structureAlignment.tree.Node;
-import cn.edu.pku.sei.structureAlignment.tree.NodeType;
+import cn.edu.pku.sei.structureAlignment.tree.node.Node;
 import cn.edu.pku.sei.structureAlignment.tree.TextStructureTree;
 import edu.mit.jwi.*;
 import edu.mit.jwi.Dictionary;

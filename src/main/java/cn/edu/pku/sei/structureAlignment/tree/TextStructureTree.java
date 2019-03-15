@@ -2,6 +2,8 @@ package cn.edu.pku.sei.structureAlignment.tree;
 
 import cn.edu.pku.sei.structureAlignment.parser.nlp.Dependency;
 import cn.edu.pku.sei.structureAlignment.parser.nlp.NLParser;
+import cn.edu.pku.sei.structureAlignment.tree.node.Node;
+import cn.edu.pku.sei.structureAlignment.tree.node.NodeType;
 import edu.stanford.nlp.semgraph.SemanticGraphEdge;
 import edu.stanford.nlp.simple.*;
 import javafx.util.Pair;
@@ -16,8 +18,6 @@ import java.util.Map;
  */
 public class TextStructureTree extends cn.edu.pku.sei.structureAlignment.tree.Tree<TextStructureTree>{
     private static int id;
-
-
 
     public static void main(String[] args){
 
@@ -53,8 +53,7 @@ public class TextStructureTree extends cn.edu.pku.sei.structureAlignment.tree.Tr
         children = new ArrayList<TextStructureTree>();
     }
 
-    public synchronized void construct(Sentence sentence){
-
+    public synchronized TextStructureTree construct(Sentence sentence){
         construct(sentence.parse() , null);
 
         List<Integer> leafNodeIndexInTextTree = new ArrayList<>();
@@ -68,9 +67,7 @@ public class TextStructureTree extends cn.edu.pku.sei.structureAlignment.tree.Tr
         List<Dependency> dependencyList = new ArrayList<>();
         List<SemanticGraphEdge> edges = sentence.dependencyGraph().edgeListSorted();
         for(SemanticGraphEdge edge : edges){
-
             Dependency dependency = new Dependency(edge);
-
             int source = edge.getSource().index();
             int target = edge.getTarget().index();
             dependency.target.id = leafNodeIndexInTextTree.get(target - 1);
@@ -79,6 +76,7 @@ public class TextStructureTree extends cn.edu.pku.sei.structureAlignment.tree.Tr
         }
 
         updateDependencyInfo(this , dependencyList);
+        return this;
     }
 
     private void updateDependencyInfo(TextStructureTree textTree , List<Dependency> dependencyList){
@@ -145,7 +143,6 @@ public class TextStructureTree extends cn.edu.pku.sei.structureAlignment.tree.Tr
         }
         return result.trim();
     }
-
 
     public static NodeType getNodeType(String text){
         if(text.compareTo("R") == 0){

@@ -9,6 +9,8 @@ import cn.edu.pku.sei.structureAlignment.parser.nlp.NLParser;
 import cn.edu.pku.sei.structureAlignment.result.Result;
 import cn.edu.pku.sei.structureAlignment.result.ResultItem;
 import cn.edu.pku.sei.structureAlignment.tree.*;
+import cn.edu.pku.sei.structureAlignment.tree.node.Node;
+import cn.edu.pku.sei.structureAlignment.tree.node.NodeType;
 import cn.edu.pku.sei.structureAlignment.util.*;
 import edu.stanford.nlp.simple.Sentence;
 import org.eclipse.jdt.core.dom.*;

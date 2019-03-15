@@ -1,7 +1,7 @@
 package cn.edu.pku.sei.structureAlignment.feature;
 
 import cn.edu.pku.sei.structureAlignment.tree.CodeStructureTree;
-import cn.edu.pku.sei.structureAlignment.tree.NodeType;
+import cn.edu.pku.sei.structureAlignment.tree.node.NodeType;
 import cn.edu.pku.sei.structureAlignment.tree.TextStructureTree;
 
 import java.util.HashMap;

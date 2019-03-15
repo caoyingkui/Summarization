@@ -1,14 +1,9 @@
 package cn.edu.pku.sei.structureAlignment.parser.code;
 
-import cn.edu.pku.sei.structureAlignment.parser.nlp.Dependency;
-import cn.edu.pku.sei.structureAlignment.parser.nlp.NLParser;
 import cn.edu.pku.sei.structureAlignment.tree.CodeStructureTree;
-import cn.edu.pku.sei.structureAlignment.tree.Node;
-import cn.edu.pku.sei.structureAlignment.tree.NodeType;
-import cn.edu.pku.sei.structureAlignment.tree.Tree;
+import cn.edu.pku.sei.structureAlignment.tree.node.Node;
+import cn.edu.pku.sei.structureAlignment.tree.node.NodeType;
 import cn.edu.pku.sei.structureAlignment.util.DigitsToWord;
-import edu.stanford.nlp.semgraph.SemanticGraphEdge;
-import edu.stanford.nlp.simple.Sentence;
 import javafx.util.Pair;
 import mySql.SqlConnector;
 import org.eclipse.jdt.core.dom.*;
@@ -35,9 +30,9 @@ public class CodeVisitor extends ASTVisitor {
     static{
         ResourceBundle bundle = ResourceBundle.getBundle("database");
         String url = bundle.getString("luceneAPI_url");
-        String user = bundle.getString("luceneAPI_user");
-        String pwd = bundle.getString("luceneAPI_pwd");
-        String driver = bundle.getString("luceneAPI_driver");
+        String user = bundle.getString("db_user");
+        String pwd = bundle.getString("db_pwd");
+        String driver = bundle.getString("db_driver");
         tableName = bundle.getString("luceneAPI_table");
 
         conn = new SqlConnector(url , user , pwd , driver);

@@ -27,12 +27,8 @@ public class Matrix <T extends Valuable>{
         this.m = m;
         this.n = n;
         matrix = new ArrayList<>();
-
-
         //深度拷贝
         try {
-
-
             for(int i = 0 ; i < m ; i ++) {
                 List<T> row = new ArrayList<T>();
                 for (int j = 0; j < n; j++){
@@ -49,9 +45,6 @@ public class Matrix <T extends Valuable>{
         }catch(Exception e){
             e.printStackTrace();
         }
-
-
-
     }
 
     public T getCell(int i, int j) {
@@ -424,6 +417,79 @@ public class Matrix <T extends Valuable>{
 
             if(matchedNodes != null){
                 matchedNodes.put(new Pair<Integer , Integer>(codeId , textId) , sim);
+            }
+        }
+        return result;
+    }
+
+    public List<Integer> getTopNCollumn(int topN) {
+        List<Integer> result = new ArrayList<>();
+        List<Pair<Integer, Double>> list = new ArrayList<>();
+        for (int i = 0; i < n; i ++) {
+            double sim = 0;
+            for (int j = 0; j < m; j++) {
+                if (sim < matrix.get(j).get(i).getValue()) sim = matrix.get(j).get(i).getValue();
+                //sim += matrix.get(j).get(i).getValue();
+            }
+            list.add(new Pair(i, sim));
+        }
+        Collections.sort(list, (pair1, pair2) -> {
+            if (pair1.getValue() < pair2.getValue() ) return 1;
+            else if (pair1.getValue() == pair2.getValue()) return 0;
+            else return -1;
+        });
+
+        for (int i = 0; i < topN && i < n; i ++) {
+            result.add(list.get(i).getKey());
+        }
+        return result;
+    }
+
+    public List<Integer> getTopNRow(int topN) {
+        List<Integer> result = new ArrayList<>();
+        List<Pair<Integer, Double>> list = new ArrayList<>();
+        for (int i = 0; i < m; i++) {
+            /*double sim = matrix.get(m).stream().map(entry ->
+                    entry.getValue()).reduce(0.0, (acc, element) ->
+                    acc + element);*/
+            double sim = 0;
+            for (int j = 0; j < n; j++) sim += matrix.get(i).get(j).getValue();
+            list.add(new Pair(i, sim));
+        }
+
+        Collections.sort(list, (pair1, pair2) -> {
+            if (pair1.getValue() < pair2.getValue()) return 1;
+            else if (pair1.getValue() < pair2.getValue()) return 0;
+            else return -1;
+        });
+
+        for (int i = 0; i < topN && i < m; i ++) {
+            result.add(list.get(i).getKey());
+        }
+        return result;
+    }
+
+    public List<Integer> getCollection() {
+        double max = 0;
+        int index = 0;
+        for (int i = 0; i < m; i ++) {
+            if (getValue(i, 0) > max) {
+                index = i;
+                max = getValue(i, 0);
+            }
+        }
+
+        List<Integer> result = new ArrayList<>();
+        result.add(index);
+        for (int i = index - 1; i > -1; i --) {
+            if (max - 0.5 < getValue(i, 0)) {
+                result.add(0, i);
+            }
+        }
+
+        for (int i = index + 1; i < m; i ++) {
+            if (max - 0.5 < getValue(i, 0)) {
+                result.add(i);
             }
         }
         return result;

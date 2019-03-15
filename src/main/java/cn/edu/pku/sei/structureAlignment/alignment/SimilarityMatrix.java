@@ -6,7 +6,7 @@ import cn.edu.pku.sei.structureAlignment.feature.KeyWordFeature;
 import cn.edu.pku.sei.structureAlignment.feature.MethodInvocationFeature;
 import cn.edu.pku.sei.structureAlignment.tree.CodeStructureTree;
 import cn.edu.pku.sei.structureAlignment.tree.MatchedNode;
-import cn.edu.pku.sei.structureAlignment.tree.Node;
+import cn.edu.pku.sei.structureAlignment.tree.node.Node;
 import cn.edu.pku.sei.structureAlignment.tree.TextStructureTree;
 import cn.edu.pku.sei.structureAlignment.util.DoubleValue;
 import cn.edu.pku.sei.structureAlignment.util.LSTM;
@@ -62,7 +62,6 @@ public class SimilarityMatrix {
     }
 
     private void parseComments(List<String> comments){
-        LSTM.n = comments.size();
 
         this.comments = comments;
         textTf = new HashMap<>();
@@ -99,15 +98,11 @@ public class SimilarityMatrix {
 
     private void calculateSimilarityMatrix(){
 
-
-        tryToMatchLeafNode();
-        tryToMatchNonleafNode();
-
         this.matrix = new Matrix<>(codeTrees.size() , textTrees.size() , new DoubleValue(0));
 
         for(int i = 0 ; i < textTrees.size() ; i ++){
             TextStructureTree textTree = textTrees.get(i);
-            Map<Integer , List<MatchedNode>> alignments = getMatchedNode(textTree);
+            Map<Integer , List<MatchedNode>> alignments = null; //getMatchedNode(textTree);
 
             for(Integer codeTreeNum : alignments.keySet()){
                 Matrix<DoubleValue> matrixTemp = new Matrix<>(codeTrees.get(codeTreeNum).getEndIndex() + 1 , textTree.getEndIndex() + 1, new DoubleValue(0));
@@ -201,274 +196,4 @@ public class SimilarityMatrix {
     }
 
 
-    private void matchNodes(int codeTreeID, int textTreeID, List<Node> codeLeafNodes, List<Node> textLeafNodes){
-        if(codeTreeID == 1 && textTreeID == 1){
-            int i = 0;
-        }
-        for(Node textNode : textLeafNodes){
-            for(Node codeNode : codeLeafNodes){
-                if(codeNode.isPunctuation())
-                    continue;
-                double compareResult = NodeComparator.compare(codeNode, textNode);
-
-                if(compareResult > 0 ){ //&& compareResult >= textNode.maxSimilarity){
-                    MatchedNode newNode = new MatchedNode(codeTreeID , codeNode , textTreeID , textNode, compareResult);
-                    newNode.logInfo = codeNode.getContent() + " " + textNode.getContent() + " : " + compareResult + " " + codeNode.getId() + " " + textNode.getId() ;
-
-
-
-                    textNode.addMatchedNode(newNode);
-                    codeNode.addMatchedNode(newNode);
-                }
-            }
-        }
-    }
-
-    private void tryToMatchLeafNode( ){
-
-        //WN.extend(codeTrees , textTrees);
-
-        List<List<Node>> codeTreeLeafNodes = new ArrayList<>();
-        for(CodeStructureTree codeTree : codeTrees){
-            codeTreeLeafNodes.add(codeTree.getAllLeafNodes());
-        }
-
-        List<List<Node>> textTreeLeafNodes = new ArrayList<>();
-        for(TextStructureTree textTree : textTrees){
-            textTreeLeafNodes.add(textTree.getAllLeafNodes());
-        }
-
-        int codeLine = 0 , codeLineCount = codeTrees.size();
-        int textLine = 0 , textLineCount = textTrees.size();
-
-
-        for(textLine = 0 ; textLine < textLineCount ; textLine ++){
-            List<Node> textLeafNodes = textTreeLeafNodes.get(textLine);
-            for(codeLine = 0 ; codeLine < codeLineCount ; codeLine ++){
-                List<Node> codeLeafNodes = codeTreeLeafNodes.get(codeLine);
-                matchNodes(codeLine , textLine , codeLeafNodes , textLeafNodes);
-            }
-        }
-
-    }
-
-    private void tryToMatchNonleafNode(){
-
-        int textTreeID , textTreeCount = textTrees.size();
-        for(textTreeID = 0 ; textTreeID < textTreeCount ; textTreeID ++){
-            TextStructureTree tree = textTrees.get(textTreeID);
-            tryToMatchNonleafNode(textTreeID, tree);
-        }
-
-
-        for(TextStructureTree textTree : textTrees){
-            firstBackPropagationForPruning(textTree , new HashSet<>());
-        }
-
-    }
-
-    List<MatchedNode> tryToMatchNonleafNode(int textTreeID, TextStructureTree textTree){
-        List<MatchedNode> result = new ArrayList<>();
-
-        List<TextStructureTree> children = textTree.getChildren();
-
-        if(children.size() == 0){
-            for(MatchedNode node : textTree.root.matchedCodeNodeList){
-                if(node.similarity > 1){
-                    result.add(node);
-                }
-            }
-            return result;
-        }else{
-
-            int treeOccurTimes[] = new int[codeTrees.size()];
-            for(int i = 0; i < codeTrees.size() ; i ++)
-                treeOccurTimes[i] = 0;
-
-            Map<Integer, Set<MatchedNode>> nodesFromSameTree = new HashMap<>();
-
-            for(TextStructureTree child : children){
-                List<MatchedNode> matchedNodes = tryToMatchNonleafNode(textTreeID, child);
-
-                //在当前child子树中出现了那些树的节点。
-                Set<Integer> codeTreeNums = new HashSet<>();
-
-
-                for(MatchedNode matchedNode : matchedNodes){
-                    int codeTreeNum;
-                    codeTreeNum = matchedNode.codeTreeID;
-                    codeTreeNums.add(codeTreeNum);
-                    if(! nodesFromSameTree.containsKey(codeTreeNum)){
-                        Set<MatchedNode> nodeSet = new HashSet<>();
-                        nodeSet.add(matchedNode);
-                        nodesFromSameTree.put(codeTreeNum, nodeSet);
-                    }else{
-                        nodesFromSameTree.get(codeTreeNum).add(matchedNode);
-                    }
-                }
-
-                for(int codeTreeNum : codeTreeNums)
-                    treeOccurTimes[codeTreeNum] ++;
-            }
-
-            Pair<Map<Integer, Integer> , Double> mergeNodes = getTextMergeNode(nodesFromSameTree, treeOccurTimes);
-
-            if(mergeNodes != null){
-                Map<Integer, Integer> nodes = mergeNodes.getKey();
-                double sim = mergeNodes.getValue();
-                Node textNode = textTree.root;
-
-                for(int codeTreeID : nodes.keySet()){
-                    int codeNodeID = nodes.get(codeTreeID);
-                    Node codeNode = codeTrees.get(codeTreeID).getNode(codeNodeID);
-                    MatchedNode newNode = new MatchedNode(codeTreeID , codeNode , textTreeID, textNode , sim);
-                    String logInfo = "";
-                    for(MatchedNode subNode : nodesFromSameTree.get(codeTreeID)){
-                        logInfo += " (" + subNode.logInfo + ")";
-                    }
-                    logInfo += (" : " + sim );
-
-                    newNode.logInfo = logInfo;
-                    textNode.addMatchedNode(newNode);
-                    codeNode.addMatchedNode(newNode);
-
-                    result.add(newNode);
-                }
-
-                for(Integer codeTreeNum : nodesFromSameTree.keySet()){
-                    //codeTreeNum这棵树的节点以及被merge,所以来自这个树的节点就不要了。
-                    if(nodes.containsKey(codeTreeNum))
-                        continue;
-                    for(MatchedNode matchedNode: nodesFromSameTree.get(codeTreeNum))
-                        result.add(matchedNode);
-                }
-
-                return result;
-            }else{
-                for(int codeTreeNum : nodesFromSameTree.keySet()){
-                    result.addAll(nodesFromSameTree.get(codeTreeNum));
-                }
-                return result;
-            }
-
-
-            /*List<List<MatchedNode>> matchedNodesFromChildren = new ArrayList<>();
-
-            for(TextStructureTree child : children){
-                List<MatchedNode> matchedNodes = tryToMatchNonleafNode(codeTrees , child , thisTreeNum);
-                if(matchedNodes != null && matchedNodes.size() > 0){
-                    matchedNodesFromChildren.add(matchedNodes);
-                }
-            }
-
-            if(matchedNodesFromChildren.size() > 1)
-                result = textTree.root.merge(matchedNodesFromChildren , thisTreeNum , codeTrees);
-
-            if(result != null && result.size() > 0)
-                return result;
-            else{
-                result = new ArrayList<>();
-                for(List<MatchedNode> matchedNodesFromOneChild : matchedNodesFromChildren){
-                    result.addAll(matchedNodesFromOneChild);
-                }
-
-                return result.size() > 0 ? result : null;
-            }*/
-        }
-
-
-    }
-
-    Pair<Map<Integer, Integer>, Double> getTextMergeNode(Map<Integer, Set<MatchedNode>> nodes, int[] treeOccurTimes){
-        Map<Integer, Integer> mergeNodes = new HashMap<>();
-        double max = 0;
-        double sim = 0;
-        for(int codeTreeID : nodes.keySet()){
-            if(treeOccurTimes[codeTreeID] < 2)
-                continue;
-
-            sim = 0;
-            Set<MatchedNode> matchedNodes = nodes.get(codeTreeID);
-            if(matchedNodes.size() < 2)
-                continue;
-
-            Set<Integer> matchedNodeIDs = new HashSet<>();
-            for(MatchedNode matchedNode : matchedNodes){
-                matchedNodeIDs.add(matchedNode.codeNode.getId());
-                if(matchedNode.similarity > sim)
-                    sim = matchedNode.similarity;
-            }
-            sim += (0.2 * matchedNodes.size());
-            int mergeNodeID = codeTrees.get(codeTreeID).findCommonParents(matchedNodeIDs);
-
-            if(max <= sim){
-                if(max < sim) {
-                    max = sim;
-                    mergeNodes = new HashMap<>();
-                }
-                mergeNodes.put(codeTreeID, mergeNodeID);
-            }
-        }
-
-        return mergeNodes.size() > 0 ? new Pair<>(mergeNodes , max) : null;
-    }
-
-    void firstBackPropagationForPruning(TextStructureTree textTree ,Set<Integer> parentHasBeenMatchedToTheseTrees){
-        if(parentHasBeenMatchedToTheseTrees.size() > 0){
-            Iterator<MatchedNode> iterator = textTree.root.matchedCodeNodeList.iterator();
-            while(iterator.hasNext()){
-                //去除了一个！
-                if(parentHasBeenMatchedToTheseTrees.contains(iterator.next().codeTreeID)){
-                    iterator.remove();
-                }
-            }
-        }
-
-
-        List<TextStructureTree> children = textTree.getChildren();
-        if(children.size() > 0){
-            for(TextStructureTree child : children) {
-                Set<Integer> treeSet = new HashSet<>();
-                treeSet.addAll(parentHasBeenMatchedToTheseTrees);
-                for (MatchedNode matchedNode :textTree.root.matchedCodeNodeList ){
-                    treeSet.add(matchedNode.codeTreeID);
-                }
-                firstBackPropagationForPruning(child, treeSet);
-            }
-        }
-    }
-
-
-
-    public Map<Integer , List<MatchedNode>> getMatchedNode(TextStructureTree textTree){
-        Map<Integer , List<MatchedNode>> result = new HashMap<>();
-        List<MatchedNode> matchedNodeList = textTree.root.matchedCodeNodeList;
-
-        if(matchedNodeList.size() > 0){
-            for(MatchedNode node : matchedNodeList){
-                int codeTreeID = node.codeTreeID;
-                if(result.containsKey(codeTreeID))
-                    result.get(codeTreeID).add(node);
-                else{
-                    List<MatchedNode> matchedNodes = new ArrayList< >();
-                    matchedNodes.add(node);
-                    result.put(codeTreeID, matchedNodes);
-                }
-
-            }
-        }
-
-        List<TextStructureTree> children = textTree.getChildren();
-        for(TextStructureTree child : children){
-            Map<Integer , List< MatchedNode>> temp = getMatchedNode(child);
-            for(Integer codeTreeNum : temp.keySet()){
-                if(result.containsKey(codeTreeNum)){
-                    result.get(codeTreeNum).addAll(temp.get(codeTreeNum));
-                }else{
-                    result.put(codeTreeNum , temp.get(codeTreeNum));
-                }
-            }
-        }
-        return result;
-    }
 }

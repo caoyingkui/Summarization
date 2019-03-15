@@ -1,4 +1,4 @@
-package cn.edu.pku.sei.structureAlignment.tree;
+package cn.edu.pku.sei.structureAlignment.tree.node;
 
 /**
  * Created by oliver on 2017/12/23.
