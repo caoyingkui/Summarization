@@ -316,7 +316,7 @@ public class StatementVisitor extends ASTVisitor{
 
         List<Statement> statements = node.statements();
         blockStatements.add(node);
-        int statementSize = blockStatements.size();
+        int statementSize = statements.size();
         for(int i = 0 ; i < statementSize ; i ++){
             Statement temp = statements.get(i);
             if(temp instanceof SwitchCase){
